@@ -1,0 +1,25 @@
+name: AC-Test-Authorizer
+version: 1.0.0
+main: net.actest.ACTestAuthorizer
+api-version: '1.21'
+author: ACTestTeam
+description: Authorization plugin for AC testing system
+
+commands:
+  actest:
+    description: Control AC testing system
+    usage: |
+      /actest enable - Enable testing
+      /actest disable - Disable testing
+      /actest whitelist <player> - Add player to whitelist
+      /actest unwhitelist <player> - Remove from whitelist
+      /actest status - Show system status
+    permission: actest.admin
+
+permissions:
+  actest.admin:
+    description: Full control over AC testing system
+    default: op
+  actest.test:
+    description: Can use testing features when whitelisted
+    default: false
