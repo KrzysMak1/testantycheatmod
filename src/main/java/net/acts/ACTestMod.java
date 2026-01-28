@@ -37,11 +37,16 @@ import net.acts.modules.world.TimerModule;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.PacketByteBufs;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -65,6 +70,11 @@ public class ACTestMod implements ClientModInitializer {
 
     private int selectedIndex = 0;
     private boolean hudEnabled = true;
+    private boolean serverAuthorized = false;
+    private long lastAuthTime = 0;
+    private String authKey = "";
+    private static final long AUTH_TIMEOUT_MS = 30000;
+    private static final Identifier AUTH_CHANNEL = new Identifier("acts", "auth");
 
     @Override
     public void onInitializeClient() {
@@ -73,6 +83,12 @@ public class ACTestMod implements ClientModInitializer {
         refreshModuleList();
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onClientTick);
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> requestAuthorization());
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> handleDisconnect());
+        ClientPlayNetworking.registerGlobalReceiver(AUTH_CHANNEL, (client, handler, buf, responseSender) -> {
+            String payload = buf.readString();
+            handleAuthPacket(payload);
+        });
         HudRenderCallback.EVENT.register((context, tickDelta) -> {
             if (hudEnabled) {
                 hudRenderer.render(context, tickDelta);
@@ -171,29 +187,52 @@ public class ACTestMod implements ClientModInitializer {
         if (client.player == null) {
             return;
         }
+        updateAuthorization(client);
         while (nextModuleKey.wasPressed()) {
-            cycleModule(1, client);
+            if (serverAuthorized) {
+                cycleModule(1, client);
+            } else {
+                notifyUnauthorized(client);
+            }
         }
         while (prevModuleKey.wasPressed()) {
-            cycleModule(-1, client);
+            if (serverAuthorized) {
+                cycleModule(-1, client);
+            } else {
+                notifyUnauthorized(client);
+            }
         }
         while (toggleSelectedKey.wasPressed()) {
-            toggleSelected(client);
+            if (serverAuthorized) {
+                toggleSelected(client);
+            } else {
+                notifyUnauthorized(client);
+            }
         }
         while (enableAllKey.wasPressed()) {
-            moduleManager.enableAll();
-            client.player.sendMessage(Text.of("[ACTests] Enabled all modules"), false);
+            if (serverAuthorized) {
+                moduleManager.enableAll();
+                client.player.sendMessage(Text.of("[ACTests] Enabled all modules"), false);
+            } else {
+                notifyUnauthorized(client);
+            }
         }
         while (disableAllKey.wasPressed()) {
-            moduleManager.disableAll();
-            client.player.sendMessage(Text.of("[ACTests] Disabled all modules"), false);
+            if (serverAuthorized) {
+                moduleManager.disableAll();
+                client.player.sendMessage(Text.of("[ACTests] Disabled all modules"), false);
+            } else {
+                notifyUnauthorized(client);
+            }
         }
         while (toggleHudKey.wasPressed()) {
             hudEnabled = !hudEnabled;
             client.player.sendMessage(Text.of("[ACTests] HUD " + (hudEnabled ? "enabled" : "disabled")), false);
         }
 
-        moduleManager.onTick(client);
+        if (serverAuthorized) {
+            moduleManager.onTick(client);
+        }
     }
 
     private void cycleModule(int delta, MinecraftClient client) {
@@ -222,5 +261,58 @@ public class ACTestMod implements ClientModInitializer {
             return;
         }
         moduleManager.setSelectedModuleName(moduleList.get(selectedIndex).getName());
+    }
+
+    private void requestAuthorization() {
+        if (MinecraftClient.getInstance().getNetworkHandler() == null) {
+            return;
+        }
+        PacketByteBuf buf = new PacketByteBuf(PacketByteBufs.create());
+        buf.writeString("ACTS-AUTH-REQ");
+        ClientPlayNetworking.send(AUTH_CHANNEL, buf);
+    }
+
+    private void handleAuthPacket(String payload) {
+        if (!payload.startsWith("ACTS-AUTH|")) {
+            return;
+        }
+        String[] parts = payload.split("\\|");
+        if (parts.length < 5) {
+            return;
+        }
+        String key = parts[1];
+        String status = parts[4];
+        if ("VALID".equalsIgnoreCase(status)) {
+            serverAuthorized = true;
+            authKey = key;
+            lastAuthTime = System.currentTimeMillis();
+            moduleManager.setStatusText("Status: AUTHORIZED", 0x55FF99);
+        }
+    }
+
+    private void updateAuthorization(MinecraftClient client) {
+        if (serverAuthorized && System.currentTimeMillis() - lastAuthTime > AUTH_TIMEOUT_MS) {
+            serverAuthorized = false;
+            authKey = "";
+            moduleManager.disableAll();
+            moduleManager.setStatusText("Status: AUTH EXPIRED", 0xFF6655);
+            client.player.sendMessage(Text.of("[ACTests] Authorization expired"), false);
+        } else if (!serverAuthorized) {
+            moduleManager.setStatusText("Status: NOT AUTHORIZED", 0xFF5555);
+        } else {
+            moduleManager.setStatusText("Status: AUTHORIZED", 0x55FF99);
+        }
+    }
+
+    private void handleDisconnect() {
+        serverAuthorized = false;
+        authKey = "";
+        lastAuthTime = 0;
+        moduleManager.disableAll();
+        moduleManager.setStatusText("Status: DISCONNECTED", 0xAAAAAA);
+    }
+
+    private void notifyUnauthorized(MinecraftClient client) {
+        client.player.sendMessage(Text.of("[ACTests] Not authorized on this server"), false);
     }
 }

@@ -15,6 +15,8 @@ public class ModuleStatusHud {
     private boolean showCategoryHeaders = true;
     private boolean showBackground = true;
     private String selectedModuleName;
+    private String statusText;
+    private int statusColor = 0xFFFFFF;
 
     public void render(DrawContext context, float tickDelta, List<BaseModule> enabledModules) {
         List<BaseModule> hudModules = enabledModules.stream()
@@ -26,6 +28,9 @@ public class ModuleStatusHud {
         var textRenderer = MinecraftClient.getInstance().textRenderer;
         List<Line> lines = new java.util.ArrayList<>();
         lines.add(new Line("Active Modules", 0xFFFFFF));
+        if (statusText != null && !statusText.isBlank()) {
+            lines.add(new Line(statusText, statusColor));
+        }
         if (selectedModuleName != null && !selectedModuleName.isBlank()) {
             lines.add(new Line("Selected: " + selectedModuleName, 0x66FFCC));
         }
@@ -79,6 +84,11 @@ public class ModuleStatusHud {
 
     public void setSelectedModuleName(String selectedModuleName) {
         this.selectedModuleName = selectedModuleName;
+    }
+
+    public void setStatusText(String statusText, int statusColor) {
+        this.statusText = statusText;
+        this.statusColor = statusColor;
     }
 
     private record Line(String text, int color) {

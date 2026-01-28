@@ -82,6 +82,10 @@ public class ModuleManager {
         statusHud.setSelectedModuleName(name);
     }
 
+    public void setStatusText(String text, int color) {
+        statusHud.setStatusText(text, color);
+    }
+
     private List<BaseModule> getEnabledModules() {
         List<BaseModule> enabled = new ArrayList<>();
         for (BaseModule module : modules.values()) {
