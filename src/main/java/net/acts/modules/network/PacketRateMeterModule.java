@@ -9,9 +9,11 @@ public class PacketRateMeterModule extends BaseModule {
     private long lastSampleTime = 0;
     private int packetsThisSecond = 0;
     private int lastRate = 0;
+    private int sampleWindowMs = 1000;
 
     public PacketRateMeterModule() {
         super("PacketRateMeter", "Measures packets per second", Category.NETWORK);
+        setDisplayColor(0x55AAFF);
     }
 
     @Override
@@ -30,7 +32,7 @@ public class PacketRateMeterModule extends BaseModule {
     public void onTick(MinecraftClient client) {
         packetsThisSecond++;
         long now = System.currentTimeMillis();
-        if (now - lastSampleTime >= 1000) {
+        if (now - lastSampleTime >= sampleWindowMs) {
             lastRate = packetsThisSecond;
             packetsThisSecond = 0;
             lastSampleTime = now;
@@ -50,5 +52,9 @@ public class PacketRateMeterModule extends BaseModule {
             0x55AAFF,
             true
         );
+    }
+
+    public void setSampleWindowMs(int sampleWindowMs) {
+        this.sampleWindowMs = Math.max(250, Math.min(5000, sampleWindowMs));
     }
 }

@@ -9,9 +9,11 @@ import net.minecraft.util.math.BlockPos;
 public class JesusModule extends BaseModule {
 
     private boolean lavaWalk = false;
+    private boolean bobbing = false;
 
     public JesusModule() {
         super("Jesus", "Keeps player afloat on liquids", Category.MOVEMENT);
+        setDisplayColor(0x55FFFF);
     }
 
     @Override
@@ -33,7 +35,8 @@ public class JesusModule extends BaseModule {
         boolean water = client.world.getBlockState(below).isOf(Blocks.WATER);
         boolean lava = client.world.getBlockState(below).isOf(Blocks.LAVA);
         if (water || (lavaWalk && lava)) {
-            client.player.setVelocity(client.player.getVelocity().x, 0.1, client.player.getVelocity().z);
+            double offset = bobbing ? (Math.sin(System.currentTimeMillis() / 150.0) * 0.02) : 0.0;
+            client.player.setVelocity(client.player.getVelocity().x, 0.1 + offset, client.player.getVelocity().z);
             client.player.setOnGround(true);
         }
     }
@@ -55,5 +58,9 @@ public class JesusModule extends BaseModule {
 
     public void setLavaWalk(boolean lavaWalk) {
         this.lavaWalk = lavaWalk;
+    }
+
+    public void setBobbing(boolean bobbing) {
+        this.bobbing = bobbing;
     }
 }

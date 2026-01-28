@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class XRayModule extends BaseModule {
 
     private int highlightRadius = 16;
+    private boolean onlyWhenSneaking = false;
 
     public XRayModule() {
         super("XRay", "Highlights ores for testing visibility", Category.VISUAL);
+        setDisplayColor(0xAAFFEE);
     }
 
     @Override
@@ -25,6 +27,9 @@ public class XRayModule extends BaseModule {
     @Override
     public void onTick(MinecraftClient client) {
         if (client.player == null) {
+            return;
+        }
+        if (onlyWhenSneaking && !client.player.isSneaking()) {
             return;
         }
         System.out.println("[XRay] Scanning radius " + highlightRadius);
@@ -47,5 +52,9 @@ public class XRayModule extends BaseModule {
 
     public void setHighlightRadius(int highlightRadius) {
         this.highlightRadius = Math.max(4, Math.min(64, highlightRadius));
+    }
+
+    public void setOnlyWhenSneaking(boolean onlyWhenSneaking) {
+        this.onlyWhenSneaking = onlyWhenSneaking;
     }
 }

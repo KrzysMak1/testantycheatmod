@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class ChestESPModule extends BaseModule {
 
     private int scanRadius = 12;
+    private boolean showTrapped = true;
 
     public ChestESPModule() {
         super("ChestESP", "Highlights chests in range", Category.VISUAL);
+        setDisplayColor(0xFFCC88);
     }
 
     @Override
@@ -27,7 +29,7 @@ public class ChestESPModule extends BaseModule {
         if (client.player == null) {
             return;
         }
-        System.out.println("[ChestESP] Scanning radius " + scanRadius);
+        System.out.println("[ChestESP] Scanning radius " + scanRadius + (showTrapped ? " (incl. trapped)" : ""));
     }
 
     @Override
@@ -47,5 +49,9 @@ public class ChestESPModule extends BaseModule {
 
     public void setScanRadius(int scanRadius) {
         this.scanRadius = Math.max(4, Math.min(32, scanRadius));
+    }
+
+    public void setShowTrapped(boolean showTrapped) {
+        this.showTrapped = showTrapped;
     }
 }

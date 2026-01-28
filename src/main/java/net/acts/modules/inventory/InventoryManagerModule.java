@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class InventoryManagerModule extends BaseModule {
 
     private boolean autoSort = true;
+    private boolean autoDropJunk = false;
 
     public InventoryManagerModule() {
         super("InventoryManager", "Sorts and cleans inventory", Category.INVENTORY);
+        setDisplayColor(0x88CCFF);
     }
 
     @Override
@@ -27,8 +29,8 @@ public class InventoryManagerModule extends BaseModule {
         if (client.player == null) {
             return;
         }
-        if (autoSort) {
-            System.out.println("[InventoryManager] Auto-sorting inventory");
+        if (autoSort || autoDropJunk) {
+            System.out.println("[InventoryManager] Auto-sort " + autoSort + ", auto-drop " + autoDropJunk);
         }
     }
 
@@ -49,5 +51,9 @@ public class InventoryManagerModule extends BaseModule {
 
     public void setAutoSort(boolean autoSort) {
         this.autoSort = autoSort;
+    }
+
+    public void setAutoDropJunk(boolean autoDropJunk) {
+        this.autoDropJunk = autoDropJunk;
     }
 }

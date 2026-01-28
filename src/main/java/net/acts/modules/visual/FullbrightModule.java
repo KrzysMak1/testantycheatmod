@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class FullbrightModule extends BaseModule {
 
     private double previousGamma = 1.0;
+    private double targetGamma = 16.0;
 
     public FullbrightModule() {
         super("Fullbright", "Boosts gamma for full brightness", Category.VISUAL);
+        setDisplayColor(0xFFFFAA);
     }
 
     @Override
@@ -18,7 +20,7 @@ public class FullbrightModule extends BaseModule {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.options != null) {
             previousGamma = client.options.getGamma().getValue();
-            client.options.getGamma().setValue(16.0);
+            client.options.getGamma().setValue(targetGamma);
         }
     }
 
@@ -34,7 +36,7 @@ public class FullbrightModule extends BaseModule {
     @Override
     public void onTick(MinecraftClient client) {
         if (client.options != null) {
-            client.options.getGamma().setValue(16.0);
+            client.options.getGamma().setValue(targetGamma);
         }
     }
 
@@ -51,5 +53,9 @@ public class FullbrightModule extends BaseModule {
             0xFFFFAA,
             true
         );
+    }
+
+    public void setTargetGamma(double targetGamma) {
+        this.targetGamma = Math.max(1.0, Math.min(20.0, targetGamma));
     }
 }

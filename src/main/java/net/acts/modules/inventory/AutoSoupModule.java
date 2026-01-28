@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class AutoSoupModule extends BaseModule {
 
     private float healthThreshold = 14.0f;
+    private int useCooldownTicks = 10;
 
     public AutoSoupModule() {
         super("AutoSoup", "Auto-eats soup when health is low", Category.INVENTORY);
+        setDisplayColor(0xFFAA77);
     }
 
     @Override
@@ -28,7 +30,7 @@ public class AutoSoupModule extends BaseModule {
             return;
         }
         if (client.player.getHealth() <= healthThreshold) {
-            System.out.println("[AutoSoup] Health low, would eat soup");
+            System.out.println("[AutoSoup] Health low, would eat soup (cooldown " + useCooldownTicks + ")");
         }
     }
 
@@ -49,5 +51,9 @@ public class AutoSoupModule extends BaseModule {
 
     public void setHealthThreshold(float healthThreshold) {
         this.healthThreshold = Math.max(1.0f, Math.min(20.0f, healthThreshold));
+    }
+
+    public void setUseCooldownTicks(int useCooldownTicks) {
+        this.useCooldownTicks = Math.max(0, Math.min(100, useCooldownTicks));
     }
 }

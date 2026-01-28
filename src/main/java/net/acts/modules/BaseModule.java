@@ -9,6 +9,8 @@ public abstract class BaseModule {
     protected final String description;
     protected final Category category;
     protected boolean enabled;
+    protected int displayColor = 0xFFFFFF;
+    protected boolean showOnHud = true;
 
     public BaseModule(String name, String description, Category category) {
         this.name = name;
@@ -68,5 +70,21 @@ public abstract class BaseModule {
 
     public Category getCategory() {
         return category;
+    }
+
+    public int getDisplayColor() {
+        return displayColor;
+    }
+
+    public void setDisplayColor(int displayColor) {
+        this.displayColor = displayColor;
+    }
+
+    public boolean isShowOnHud() {
+        return showOnHud;
+    }
+
+    public void setShowOnHud(boolean showOnHud) {
+        this.showOnHud = showOnHud;
     }
 }

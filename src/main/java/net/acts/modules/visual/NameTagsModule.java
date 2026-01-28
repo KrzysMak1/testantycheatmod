@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class NameTagsModule extends BaseModule {
 
     private float scale = 1.2f;
+    private boolean showDistance = false;
 
     public NameTagsModule() {
         super("NameTags", "Shows name tags through walls", Category.VISUAL);
+        setDisplayColor(0xAAFFEE);
     }
 
     @Override
@@ -27,7 +29,7 @@ public class NameTagsModule extends BaseModule {
         if (client.world == null) {
             return;
         }
-        System.out.println("[NameTags] Rendering name tags x" + scale);
+        System.out.println("[NameTags] Rendering name tags x" + scale + (showDistance ? " with distance" : ""));
     }
 
     @Override
@@ -47,5 +49,9 @@ public class NameTagsModule extends BaseModule {
 
     public void setScale(float scale) {
         this.scale = Math.max(0.8f, Math.min(2.5f, scale));
+    }
+
+    public void setShowDistance(boolean showDistance) {
+        this.showDistance = showDistance;
     }
 }

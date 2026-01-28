@@ -7,9 +7,12 @@ import net.minecraft.client.gui.DrawContext;
 public class PacketLoggerModule extends BaseModule {
 
     private int logLimit = 50;
+    private boolean logInbound = true;
+    private boolean logOutbound = true;
 
     public PacketLoggerModule() {
         super("PacketLogger", "Logs recent packets for audit", Category.NETWORK);
+        setDisplayColor(0xAAAAFF);
     }
 
     @Override
@@ -27,7 +30,8 @@ public class PacketLoggerModule extends BaseModule {
         if (client.getNetworkHandler() == null) {
             return;
         }
-        System.out.println("[PacketLogger] Logging up to " + logLimit + " packets");
+        System.out.println("[PacketLogger] Logging up to " + logLimit + " packets (inbound "
+            + logInbound + ", outbound " + logOutbound + ")");
     }
 
     @Override
@@ -47,5 +51,13 @@ public class PacketLoggerModule extends BaseModule {
 
     public void setLogLimit(int logLimit) {
         this.logLimit = Math.max(10, Math.min(500, logLimit));
+    }
+
+    public void setLogInbound(boolean logInbound) {
+        this.logInbound = logInbound;
+    }
+
+    public void setLogOutbound(boolean logOutbound) {
+        this.logOutbound = logOutbound;
     }
 }

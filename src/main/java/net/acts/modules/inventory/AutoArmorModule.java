@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class AutoArmorModule extends BaseModule {
 
     private boolean prioritizeProtection = true;
+    private int equipDelayTicks = 4;
 
     public AutoArmorModule() {
         super("AutoArmor", "Equips best armor automatically", Category.INVENTORY);
+        setDisplayColor(0xCCCCCC);
     }
 
     @Override
@@ -27,7 +29,7 @@ public class AutoArmorModule extends BaseModule {
         if (client.player == null) {
             return;
         }
-        System.out.println("[AutoArmor] Scanning armor, prioritize: " + prioritizeProtection);
+        System.out.println("[AutoArmor] Scanning armor, prioritize: " + prioritizeProtection + ", delay " + equipDelayTicks);
     }
 
     @Override
@@ -47,5 +49,9 @@ public class AutoArmorModule extends BaseModule {
 
     public void setPrioritizeProtection(boolean prioritizeProtection) {
         this.prioritizeProtection = prioritizeProtection;
+    }
+
+    public void setEquipDelayTicks(int equipDelayTicks) {
+        this.equipDelayTicks = Math.max(0, Math.min(20, equipDelayTicks));
     }
 }

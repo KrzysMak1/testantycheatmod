@@ -8,9 +8,11 @@ public class FlyModule extends BaseModule {
 
     private float flySpeed = 0.05f;
     private boolean airJump = false;
+    private boolean glide = false;
 
     public FlyModule() {
         super("Fly", "Enables client-side flight controls", Category.MOVEMENT);
+        setDisplayColor(0x55AAFF);
     }
 
     @Override
@@ -38,6 +40,9 @@ public class FlyModule extends BaseModule {
         if (airJump && client.options.jumpKey.wasPressed()) {
             client.player.addVelocity(0.0, 0.2, 0.0);
         }
+        if (glide && !client.player.isOnGround() && client.player.getVelocity().y < 0) {
+            client.player.setVelocity(client.player.getVelocity().x, -0.02, client.player.getVelocity().z);
+        }
     }
 
     @Override
@@ -61,5 +66,9 @@ public class FlyModule extends BaseModule {
 
     public void setAirJump(boolean airJump) {
         this.airJump = airJump;
+    }
+
+    public void setGlide(boolean glide) {
+        this.glide = glide;
     }
 }

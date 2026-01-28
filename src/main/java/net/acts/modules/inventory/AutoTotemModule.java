@@ -8,9 +8,11 @@ import net.minecraft.item.Items;
 public class AutoTotemModule extends BaseModule {
 
     private boolean swapToOffhand = true;
+    private float healthThreshold = 8.0f;
 
     public AutoTotemModule() {
         super("AutoTotem", "Keeps a totem in offhand", Category.INVENTORY);
+        setDisplayColor(0xFFD700);
     }
 
     @Override
@@ -29,7 +31,7 @@ public class AutoTotemModule extends BaseModule {
             return;
         }
         boolean hasTotem = client.player.getInventory().contains(Items.TOTEM_OF_UNDYING.getDefaultStack());
-        if (swapToOffhand && hasTotem) {
+        if (swapToOffhand && hasTotem && client.player.getHealth() <= healthThreshold) {
             System.out.println("[AutoTotem] Totem available");
         }
     }
@@ -51,5 +53,9 @@ public class AutoTotemModule extends BaseModule {
 
     public void setSwapToOffhand(boolean swapToOffhand) {
         this.swapToOffhand = swapToOffhand;
+    }
+
+    public void setHealthThreshold(float healthThreshold) {
+        this.healthThreshold = Math.max(1.0f, Math.min(20.0f, healthThreshold));
     }
 }

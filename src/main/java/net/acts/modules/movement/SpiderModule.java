@@ -8,9 +8,11 @@ import net.minecraft.util.math.Vec3d;
 public class SpiderModule extends BaseModule {
 
     private double climbSpeed = 0.2;
+    private boolean onlyWhenSneaking = false;
 
     public SpiderModule() {
         super("Spider", "Climbs walls when colliding", Category.MOVEMENT);
+        setDisplayColor(0xAAFFAA);
     }
 
     @Override
@@ -28,7 +30,7 @@ public class SpiderModule extends BaseModule {
         if (client.player == null) {
             return;
         }
-        if (client.player.horizontalCollision) {
+        if (client.player.horizontalCollision && (!onlyWhenSneaking || client.player.isSneaking())) {
             Vec3d velocity = client.player.getVelocity();
             client.player.setVelocity(velocity.x, climbSpeed, velocity.z);
         }
@@ -51,5 +53,9 @@ public class SpiderModule extends BaseModule {
 
     public void setClimbSpeed(double climbSpeed) {
         this.climbSpeed = Math.max(0.05, Math.min(0.5, climbSpeed));
+    }
+
+    public void setOnlyWhenSneaking(boolean onlyWhenSneaking) {
+        this.onlyWhenSneaking = onlyWhenSneaking;
     }
 }

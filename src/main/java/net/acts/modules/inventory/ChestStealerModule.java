@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class ChestStealerModule extends BaseModule {
 
     private int stealDelay = 2;
+    private boolean randomizeOrder = false;
 
     public ChestStealerModule() {
         super("ChestStealer", "Quickly loots chest contents", Category.INVENTORY);
+        setDisplayColor(0xCCCC55);
     }
 
     @Override
@@ -27,7 +29,8 @@ public class ChestStealerModule extends BaseModule {
         if (client.player == null) {
             return;
         }
-        System.out.println("[ChestStealer] Steal delay " + stealDelay + " ticks");
+        System.out.println("[ChestStealer] Steal delay " + stealDelay + " ticks"
+            + (randomizeOrder ? " (random order)" : ""));
     }
 
     @Override
@@ -47,5 +50,9 @@ public class ChestStealerModule extends BaseModule {
 
     public void setStealDelay(int stealDelay) {
         this.stealDelay = Math.max(0, Math.min(20, stealDelay));
+    }
+
+    public void setRandomizeOrder(boolean randomizeOrder) {
+        this.randomizeOrder = randomizeOrder;
     }
 }

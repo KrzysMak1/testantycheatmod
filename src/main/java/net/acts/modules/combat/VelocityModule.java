@@ -8,9 +8,11 @@ public class VelocityModule extends BaseModule {
 
     private float horizontal = 0.6f;
     private float vertical = 0.8f;
+    private boolean onlyWhenSprinting = false;
 
     public VelocityModule() {
         super("Velocity", "Scales knockback for testing", Category.COMBAT);
+        setDisplayColor(0xFFAAAA);
     }
 
     @Override
@@ -28,7 +30,7 @@ public class VelocityModule extends BaseModule {
         if (client.player == null) {
             return;
         }
-        if (client.player.hurtTime > 0) {
+        if (client.player.hurtTime > 0 && (!onlyWhenSprinting || client.player.isSprinting())) {
             client.player.setVelocity(
                 client.player.getVelocity().x * horizontal,
                 client.player.getVelocity().y * vertical,
@@ -58,5 +60,9 @@ public class VelocityModule extends BaseModule {
 
     public void setVertical(float vertical) {
         this.vertical = Math.max(0.0f, Math.min(1.0f, vertical));
+    }
+
+    public void setOnlyWhenSprinting(boolean onlyWhenSprinting) {
+        this.onlyWhenSprinting = onlyWhenSprinting;
     }
 }

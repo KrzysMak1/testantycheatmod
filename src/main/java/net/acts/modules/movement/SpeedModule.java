@@ -9,9 +9,11 @@ public class SpeedModule extends BaseModule {
 
     private float speedMultiplier = 1.4f;
     private boolean autoSprint = true;
+    private boolean boostStrafe = false;
 
     public SpeedModule() {
         super("Speed", "Scales movement speed for bypass testing", Category.MOVEMENT);
+        setDisplayColor(0x55FF55);
     }
 
     @Override
@@ -34,7 +36,9 @@ public class SpeedModule extends BaseModule {
         }
         Vec3d velocity = client.player.getVelocity();
         if (client.player.input != null && (client.player.input.movementForward != 0 || client.player.input.movementSideways != 0)) {
-            client.player.setVelocity(velocity.x * speedMultiplier, velocity.y, velocity.z * speedMultiplier);
+            float forwardMultiplier = speedMultiplier;
+            float strafeMultiplier = boostStrafe && client.player.input.movementSideways != 0 ? speedMultiplier * 1.15f : speedMultiplier;
+            client.player.setVelocity(velocity.x * strafeMultiplier, velocity.y, velocity.z * forwardMultiplier);
         }
     }
 
@@ -59,5 +63,9 @@ public class SpeedModule extends BaseModule {
 
     public void setAutoSprint(boolean autoSprint) {
         this.autoSprint = autoSprint;
+    }
+
+    public void setBoostStrafe(boolean boostStrafe) {
+        this.boostStrafe = boostStrafe;
     }
 }

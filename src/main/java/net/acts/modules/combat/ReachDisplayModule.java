@@ -11,9 +11,11 @@ public class ReachDisplayModule extends BaseModule {
     private double lastReach = 0.0;
     private boolean warnOnReach = true;
     private double warningThreshold = 3.2;
+    private boolean showWhenIdle = true;
 
     public ReachDisplayModule() {
         super("ReachDisplay", "Displays current reach distance and warnings", Category.COMBAT);
+        setDisplayColor(0xFFFFFF);
     }
 
     @Override
@@ -38,7 +40,9 @@ public class ReachDisplayModule extends BaseModule {
                 System.out.println("[ReachDisplay] Reach warning: " + lastReach);
             }
         } else {
-            lastReach = 0.0;
+            if (showWhenIdle) {
+                lastReach = 0.0;
+            }
         }
     }
 
@@ -64,5 +68,9 @@ public class ReachDisplayModule extends BaseModule {
 
     public void setWarnOnReach(boolean warnOnReach) {
         this.warnOnReach = warnOnReach;
+    }
+
+    public void setShowWhenIdle(boolean showWhenIdle) {
+        this.showWhenIdle = showWhenIdle;
     }
 }

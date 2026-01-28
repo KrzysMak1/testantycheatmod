@@ -85,6 +85,13 @@ public class ModuleManager {
                 enabled.add(module);
             }
         }
+        enabled.sort((a, b) -> {
+            int category = a.getCategory().compareTo(b.getCategory());
+            if (category != 0) {
+                return category;
+            }
+            return a.getName().compareToIgnoreCase(b.getName());
+        });
         return enabled;
     }
 }

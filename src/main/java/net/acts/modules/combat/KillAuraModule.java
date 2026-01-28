@@ -17,9 +17,11 @@ public class KillAuraModule extends BaseModule {
     private int attackDelayTicks = 10;
     private int lastAttackTick = 0;
     private boolean requireClick = true;
+    private boolean requireLineOfSight = true;
 
     public KillAuraModule() {
         super("KillAura", "Targets nearby entities for test attacks", Category.COMBAT);
+        setDisplayColor(0xFF6666);
     }
 
     @Override
@@ -48,6 +50,7 @@ public class KillAuraModule extends BaseModule {
         Entity target = targets.stream()
             .filter(entity -> entity instanceof LivingEntity)
             .filter(Entity::isAlive)
+            .filter(entity -> !requireLineOfSight || client.player.canSee(entity))
             .min(Comparator.comparingDouble(entity -> client.player.squaredDistanceTo(entity)))
             .orElse(null);
         if (target == null) {
@@ -87,5 +90,9 @@ public class KillAuraModule extends BaseModule {
 
     public void setRequireClick(boolean requireClick) {
         this.requireClick = requireClick;
+    }
+
+    public void setRequireLineOfSight(boolean requireLineOfSight) {
+        this.requireLineOfSight = requireLineOfSight;
     }
 }

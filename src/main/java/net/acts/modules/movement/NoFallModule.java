@@ -7,9 +7,16 @@ import net.minecraft.client.gui.DrawContext;
 public class NoFallModule extends BaseModule {
 
     private boolean resetVelocity = false;
+    private Mode mode = Mode.SOFT;
 
     public NoFallModule() {
         super("NoFall", "Clears fall distance to test fall checks", Category.MOVEMENT);
+        setDisplayColor(0xFFD055);
+    }
+
+    public enum Mode {
+        SOFT,
+        HARD
     }
 
     @Override
@@ -27,7 +34,9 @@ public class NoFallModule extends BaseModule {
         if (client.player == null) {
             return;
         }
-        client.player.fallDistance = 0.0f;
+        if (mode == Mode.HARD) {
+            client.player.fallDistance = 0.0f;
+        }
         if (resetVelocity && client.player.getVelocity().y < -0.5) {
             client.player.setVelocity(client.player.getVelocity().x, -0.1, client.player.getVelocity().z);
         }
@@ -50,5 +59,11 @@ public class NoFallModule extends BaseModule {
 
     public void setResetVelocity(boolean resetVelocity) {
         this.resetVelocity = resetVelocity;
+    }
+
+    public void setMode(Mode mode) {
+        if (mode != null) {
+            this.mode = mode;
+        }
     }
 }

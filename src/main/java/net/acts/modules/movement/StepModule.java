@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class StepModule extends BaseModule {
 
     private float stepHeight = 1.0f;
+    private boolean reverseStep = false;
 
     public StepModule() {
         super("Step", "Increases step height for obstacle tests", Category.MOVEMENT);
+        setDisplayColor(0xDDDD55);
     }
 
     @Override
@@ -28,6 +30,9 @@ public class StepModule extends BaseModule {
             return;
         }
         client.player.stepHeight = stepHeight;
+        if (reverseStep && client.player.isOnGround()) {
+            client.player.addVelocity(0.0, -0.08, 0.0);
+        }
     }
 
     @Override
@@ -47,5 +52,9 @@ public class StepModule extends BaseModule {
 
     public void setStepHeight(float stepHeight) {
         this.stepHeight = Math.max(0.6f, Math.min(2.5f, stepHeight));
+    }
+
+    public void setReverseStep(boolean reverseStep) {
+        this.reverseStep = reverseStep;
     }
 }

@@ -12,9 +12,12 @@ public class AutoClickerModule extends BaseModule {
     private int cps = 10;
     private long lastClick = 0;
     private Mode mode = Mode.CONSTANT;
+    private boolean onlyOnEntity = false;
+    private int jitterMs = 0;
 
     public AutoClickerModule() {
         super("AutoClicker", "Performs timed clicks for CPS testing", Category.COMBAT);
+        setDisplayColor(0xFFFFFF);
     }
 
     public enum Mode {
@@ -43,10 +46,16 @@ public class AutoClickerModule extends BaseModule {
         }
         long now = System.currentTimeMillis();
         long interval = Math.max(1, 1000 / getCurrentCps());
+        if (jitterMs > 0) {
+            interval += (int) (Math.random() * jitterMs);
+        }
         if (now - lastClick < interval) {
             return;
         }
         HitResult hit = client.crosshairTarget;
+        if (onlyOnEntity && !(hit instanceof EntityHitResult)) {
+            return;
+        }
         if (hit instanceof EntityHitResult entityHit) {
             client.interactionManager.attackEntity(client.player, entityHit.getEntity());
         }
@@ -89,5 +98,13 @@ public class AutoClickerModule extends BaseModule {
         if (mode != null) {
             this.mode = mode;
         }
+    }
+
+    public void setOnlyOnEntity(boolean onlyOnEntity) {
+        this.onlyOnEntity = onlyOnEntity;
+    }
+
+    public void setJitterMs(int jitterMs) {
+        this.jitterMs = Math.max(0, Math.min(30, jitterMs));
     }
 }

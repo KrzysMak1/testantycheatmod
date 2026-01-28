@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class TracersModule extends BaseModule {
 
     private boolean showPlayersOnly = true;
+    private boolean showThroughWalls = true;
 
     public TracersModule() {
         super("Tracers", "Draws tracers to entities", Category.VISUAL);
+        setDisplayColor(0xAA88FF);
     }
 
     @Override
@@ -27,7 +29,8 @@ public class TracersModule extends BaseModule {
         if (client.world == null) {
             return;
         }
-        System.out.println("[Tracers] Active " + (showPlayersOnly ? "Players" : "All"));
+        System.out.println("[Tracers] Active " + (showPlayersOnly ? "Players" : "All")
+            + (showThroughWalls ? " (through walls)" : ""));
     }
 
     @Override
@@ -47,5 +50,9 @@ public class TracersModule extends BaseModule {
 
     public void setShowPlayersOnly(boolean showPlayersOnly) {
         this.showPlayersOnly = showPlayersOnly;
+    }
+
+    public void setShowThroughWalls(boolean showThroughWalls) {
+        this.showThroughWalls = showThroughWalls;
     }
 }

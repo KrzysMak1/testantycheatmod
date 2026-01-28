@@ -9,9 +9,12 @@ import net.minecraft.util.math.BlockPos;
 public class ScaffoldModule extends BaseModule {
 
     private boolean towerMode = false;
+    private int placeDelayTicks = 2;
+    private long lastPlaceTick = 0;
 
     public ScaffoldModule() {
         super("Scaffold", "Assists with block placement under player", Category.MOVEMENT);
+        setDisplayColor(0xFFFFFF);
     }
 
     @Override
@@ -30,11 +33,16 @@ public class ScaffoldModule extends BaseModule {
             return;
         }
         BlockPos below = client.player.getBlockPos().down();
+        long tick = client.world.getTime();
+        if (tick - lastPlaceTick < placeDelayTicks) {
+            return;
+        }
         if (client.world.getBlockState(below).isAir() && client.player.getMainHandStack().getItem() instanceof BlockItem) {
             if (towerMode && client.options.jumpKey.isPressed()) {
                 client.player.addVelocity(0.0, 0.2, 0.0);
             }
             System.out.println("[Scaffold] Block placement hint at " + below);
+            lastPlaceTick = tick;
         }
     }
 
@@ -55,5 +63,9 @@ public class ScaffoldModule extends BaseModule {
 
     public void setTowerMode(boolean towerMode) {
         this.towerMode = towerMode;
+    }
+
+    public void setPlaceDelayTicks(int placeDelayTicks) {
+        this.placeDelayTicks = Math.max(0, Math.min(10, placeDelayTicks));
     }
 }

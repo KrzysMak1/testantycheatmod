@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class ESPModule extends BaseModule {
 
     private boolean showHealthBars = true;
+    private boolean playersOnly = false;
 
     public ESPModule() {
         super("ESP", "Displays entity outlines and stats", Category.VISUAL);
+        setDisplayColor(0xFF99FF);
     }
 
     @Override
@@ -27,7 +29,11 @@ public class ESPModule extends BaseModule {
         if (client.world == null) {
             return;
         }
-        System.out.println("[ESP] Tracking entities: " + client.world.getEntities().size());
+        if (playersOnly && client.world != null) {
+            System.out.println("[ESP] Tracking players only");
+        } else {
+            System.out.println("[ESP] Tracking entities: " + client.world.getEntities().size());
+        }
     }
 
     @Override
@@ -47,5 +53,9 @@ public class ESPModule extends BaseModule {
 
     public void setShowHealthBars(boolean showHealthBars) {
         this.showHealthBars = showHealthBars;
+    }
+
+    public void setPlayersOnly(boolean playersOnly) {
+        this.playersOnly = playersOnly;
     }
 }

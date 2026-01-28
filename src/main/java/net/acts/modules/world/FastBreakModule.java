@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class FastBreakModule extends BaseModule {
 
     private float breakMultiplier = 1.5f;
+    private boolean onlyOnGround = false;
 
     public FastBreakModule() {
         super("FastBreak", "Accelerates block breaking for testing", Category.WORLD);
+        setDisplayColor(0xFFAA55);
     }
 
     @Override
@@ -27,7 +29,7 @@ public class FastBreakModule extends BaseModule {
         if (client.player == null || client.interactionManager == null) {
             return;
         }
-        if (client.player.isBreakingBlock()) {
+        if (client.player.isBreakingBlock() && (!onlyOnGround || client.player.isOnGround())) {
             client.interactionManager.setBlockBreakingCooldown(Math.max(0, (int) (4 / breakMultiplier)));
         }
     }
@@ -49,5 +51,9 @@ public class FastBreakModule extends BaseModule {
 
     public void setBreakMultiplier(float breakMultiplier) {
         this.breakMultiplier = Math.max(1.0f, Math.min(5.0f, breakMultiplier));
+    }
+
+    public void setOnlyOnGround(boolean onlyOnGround) {
+        this.onlyOnGround = onlyOnGround;
     }
 }

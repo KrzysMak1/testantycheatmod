@@ -9,9 +9,11 @@ import net.minecraft.util.math.Vec3d;
 public class NoSlowModule extends BaseModule {
 
     private float useItemMultiplier = 1.2f;
+    private boolean ignoreSneak = false;
 
     public NoSlowModule() {
         super("NoSlow", "Offsets slowdown from items and effects", Category.MOVEMENT);
+        setDisplayColor(0x99FF55);
     }
 
     @Override
@@ -29,7 +31,8 @@ public class NoSlowModule extends BaseModule {
         if (client.player == null) {
             return;
         }
-        if (client.player.isUsingItem() || client.player.hasStatusEffect(StatusEffects.SLOWNESS)) {
+        if ((client.player.isUsingItem() || client.player.hasStatusEffect(StatusEffects.SLOWNESS))
+            && (!ignoreSneak || !client.player.isSneaking())) {
             Vec3d velocity = client.player.getVelocity();
             client.player.setVelocity(velocity.x * useItemMultiplier, velocity.y, velocity.z * useItemMultiplier);
         }
@@ -52,5 +55,9 @@ public class NoSlowModule extends BaseModule {
 
     public void setUseItemMultiplier(float useItemMultiplier) {
         this.useItemMultiplier = Math.max(1.0f, Math.min(2.5f, useItemMultiplier));
+    }
+
+    public void setIgnoreSneak(boolean ignoreSneak) {
+        this.ignoreSneak = ignoreSneak;
     }
 }

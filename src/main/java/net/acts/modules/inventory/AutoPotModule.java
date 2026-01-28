@@ -7,9 +7,11 @@ import net.minecraft.client.gui.DrawContext;
 public class AutoPotModule extends BaseModule {
 
     private float healthThreshold = 12.0f;
+    private int useCooldownTicks = 20;
 
     public AutoPotModule() {
         super("AutoPot", "Auto-uses splash or drinkable potions", Category.INVENTORY);
+        setDisplayColor(0xFF77AA);
     }
 
     @Override
@@ -28,7 +30,7 @@ public class AutoPotModule extends BaseModule {
             return;
         }
         if (client.player.getHealth() <= healthThreshold) {
-            System.out.println("[AutoPot] Health low, would use potion");
+            System.out.println("[AutoPot] Health low, would use potion (cooldown " + useCooldownTicks + ")");
         }
     }
 
@@ -49,5 +51,9 @@ public class AutoPotModule extends BaseModule {
 
     public void setHealthThreshold(float healthThreshold) {
         this.healthThreshold = Math.max(1.0f, Math.min(20.0f, healthThreshold));
+    }
+
+    public void setUseCooldownTicks(int useCooldownTicks) {
+        this.useCooldownTicks = Math.max(0, Math.min(100, useCooldownTicks));
     }
 }
