@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "anticheattestsuite",
+  "version": "${version}",
+  "name": "AntiCheat Test Suite",
+  "description": "Authorized anti-cheat testing modules for private servers",
+  "authors": ["AC Test Team"],
+  "contact": {
+    "homepage": "https://example.invalid",
+    "sources": "https://example.invalid"
+  },
+  "license": "GPL-3.0-only",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "net.acts.ACTestMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "fabric-api": "*",
+    "minecraft": "~1.21.10",
+    "java": ">=21"
+  },
+  "custom": {
+    "authorization_required": true,
+    "warning": "FOR AUTHORIZED TESTING ONLY"
+  }
+}
